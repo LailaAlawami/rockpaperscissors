@@ -26,7 +26,6 @@
             margin-top: 30px;
             box-shadow: 2px 2px 2px #999797;
         }
-
         h1,
         h2,
         h3 {
@@ -203,6 +202,7 @@
             $(".loading").show();
             setTimeout(function () {
                 var currentPlay = document.querySelector('input[name = "options"]:checked').id;
+                console.log(currentPlay)
                 $(".loading").hide();
                 checkForWin(pickComputersPlay(), currentPlay);
             }, 2000)
