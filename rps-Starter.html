@@ -10,6 +10,7 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
         crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             position: relative;
@@ -18,7 +19,7 @@
         form {
             border: solid;
             border-width: 1px;
-            width: 1100px;
+            width: 100%;
             height: 350px;
             display: inline-block;
             text-align: center;
@@ -26,7 +27,9 @@
             box-shadow: 2px 2px 2px #999797;
         }
 
-        h1 {
+        h1,
+        h2,
+        h3 {
             text-align: center;
         }
 
@@ -39,8 +42,63 @@
         #play {
             width: 120px;
         }
-        label img{
-            width : 150px;
+
+        label img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .loading {
+            display: none;
+            position: absolute;
+            top: 200px;
+            left: 42%;
+            width: 20%;
+            margin: -60px 0 0 -60px;
+            -webkit-animation: spin 2s linear infinite;
+            -moz-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        #score-card {
+            height: 350px;
+            overflow: scroll;
+        }
+
+        .gray {
+            background-color: darkgray;
+        }
+
+        @-moz-keyframes spin {
+            100% {
+                -moz-transform: rotate(360deg);
+            }
+        }
+
+        @-webkit-keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 740px) {
+            label img {
+                width: 65px;
+                height: 65px;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            h3 {
+                font-size: 1.2em;
+            }
         }
     </style>
 
@@ -48,25 +106,43 @@
 
 <body>
     <div class="container">
+        <img class="loading" src="rps1.png">
         <form action="">
             <h1>Rock Paper Scissors</h1>
-            <div class="btn-group" data-toggle="buttons">
-                
+            <div class="btn-group" data-toggle="buttons" required>
+
                 <br>
                 <label class="btn btn-secondary">
-                    <input type="radio" name="options" id="rock" autocomplete="off" checked> <img src="rock.png">
+                    <input type="radio" name="options" id="rock" autocomplete="off">
+                    <img src="rock.png">
                 </label>
                 <label class="btn btn-secondary">
-                    <input type="radio" name="options" id="paper" autocomplete="off" checked> <img src="paper.png">
+                    <input type="radio" name="options" id="paper" autocomplete="off">
+                    <img src="paper.png">
                 </label>
                 <label class="btn btn-secondary">
-                    <input type="radio" name="options" id="scissors" autocomplete="off" checked> <img src="scissors.png">
+                    <input type="radio" name="options" id="scissors" autocomplete="off">
+                    <img src="scissors.png">
                 </label>
             </div>
             <br>
             <br>
-            <button id="play" class="btn btn-secondary" onclick="displayWinner();">Play</button>
+            <button id="play" class="btn btn-secondary" onclick="displayWinner(event);">Play</button>
         </form>
+        <div class="row">
+            <div class="col-xs-4">
+                <h2>Player</h2>
+            </div>
+            <div class="col-xs-4">
+                <h2>Computer</h2>
+            </div>
+            <div class="col-xs-4">
+                <h2>Winner</h2>
+            </div>
+        </div>
+        <div class="row" id="score-card">
+        </div>
+
     </div>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
         crossorigin="anonymous"></script>
@@ -74,6 +150,13 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
     <script>
+        var records = [];
+        if (localStorage.getItem("history")) {
+            records = JSON.parse(localStorage.getItem("history"))
+            for (var i = 0; i < records.length; i++) {
+                printwinners(records[i].computer, records[i].player, records[i].winner, i % 2)
+            }
+        }
         function pickComputersPlay() {
             var arr = ["rock", "paper", "scissors"]
             var num = Math.floor(Math.random() * 3)
@@ -81,39 +164,73 @@
         }
 
         function checkForWin(computer, current) {
+            var winner = null;
             if (computer === current) {
-                return "the game was a tie"
+                winner = "Tie"
             }
             if (computer === "rock") {
                 if (current === "paper") {
-                    return "computer picked rock, you win"
+                    winner = "Player"
                 }
                 if (current === "scissors") {
-                    return "computer picked rock, you lose"
+                    winner = "Computer"
                 }
             }
             if (computer === "paper") {
                 if (current === "rock") {
-                    return "computer picked paper, you lose"
+                    winner = "Computer"
                 }
                 if (current === "scissors") {
-                    return "computer picked paper, you win"
+                    winner = "Player"
                 }
             }
             if (computer === "scissors") {
                 if (current === "paper") {
-                    return "computer picked scissors, you lose"
+                    winner = "Computer"
                 }
                 if (current === "rock") {
-                    return "computer picked scissors, you win"
+                    winner = "Player"
                 }
             }
-            return computer
+            printwinners(computer, current, winner, records.length % 2);
+            savewinners(computer, current, winner);
+            localStorage.setItem("history", JSON.stringify(records))
+
         }
 
-        function displayWinner() {
-            var currentPlay = document.querySelector('input[name = "options"]:checked').id;
-            alert(checkForWin(pickComputersPlay(), currentPlay));
+        function displayWinner(e) {
+            e.preventDefault();
+            $(".loading").show();
+            setTimeout(function () {
+                var currentPlay = document.querySelector('input[name = "options"]:checked').id;
+                $(".loading").hide();
+                checkForWin(pickComputersPlay(), currentPlay);
+            }, 2000)
+
+        }
+
+        function printwinners(computer, player, winner, isGray) {
+            isGray = isGray ? "" : "gray";
+            $("#score-card").prepend(`
+                        <div class="col-xs-4 ${isGray}">
+                            <h3>${player}</h3>
+                            </div>
+                            <div class="col-xs-4 ${isGray}">
+                                        <h3>${computer}</h3>
+                                    </div>
+                                    <div class="col-xs-4 ${isGray}">
+                                        <h3>${winner}</h3>
+                                    </div>
+                        `)
+        }
+        function savewinners(computer, player, winner) {
+
+            records.push({
+                "computer": computer,
+                "player": player,
+                "winner": winner
+            })
+            console.log(records)
         }
     </script>
 </body>
