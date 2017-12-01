@@ -50,6 +50,7 @@
         .loading {
             display: none;
             position: absolute;
+            z-index: 100;
             top: 200px;
             left: 42%;
             width: 20%;
@@ -108,7 +109,7 @@
         <img class="loading" src="rps1.png">
         <form action="">
             <h1>Rock Paper Scissors</h1>
-            <div class="btn-group" data-toggle="buttons" required>
+            <div class="btn-group" data-toggle="buttons" onchange="changeFocus()" required>
 
                 <br>
                 <label class="btn btn-secondary">
@@ -117,11 +118,11 @@
                 </label>
                 <label class="btn btn-secondary">
                     <input type="radio" name="options" id="paper" autocomplete="off">
-                    <img src="paper.png">
+                    <img src="paper.jpg">
                 </label>
                 <label class="btn btn-secondary">
                     <input type="radio" name="options" id="scissors" autocomplete="off">
-                    <img src="scissors.png">
+                    <img src="scissors.jpg">
                 </label>
             </div>
             <br>
@@ -231,6 +232,10 @@
                 "winner": winner
             })
             console.log(records)
+        }
+
+        function changeFocus (){
+            $("input[name=options]:checked","form").focus()
         }
     </script>
 </body>
